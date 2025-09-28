@@ -16,7 +16,7 @@ struct ContentView: View {
     
     @FocusState private var inputIsFocused: Bool
     @FocusState private var outputIsFocused: Bool
-    
+
     let conversions = ["Distance", "Mass", "Temperature", "Time"]
     
     let unitTypes = [
@@ -66,7 +66,9 @@ struct ContentView: View {
                         .keyboardType(.decimalPad)
                         .focused($inputIsFocused)
                         .onChange(of: inputValue) {
-                            outputValue = calculateConversion(from: inputUnit, to: outputUnit, value: inputValue)
+                            if !outputIsFocused {
+                                outputValue = calculateConversion(from: inputUnit, to: outputUnit, value: inputValue)
+                            }
                         }
                 }
                 
@@ -85,7 +87,9 @@ struct ContentView: View {
                         .keyboardType(.decimalPad)
                         .focused($outputIsFocused)
                         .onChange(of: outputValue) {
-                            inputValue = calculateConversion(from: outputUnit, to: inputUnit, value: outputValue)
+                            if !inputIsFocused {
+                                inputValue = calculateConversion(from: outputUnit, to: inputUnit, value: outputValue)
+                            }
                         }
                 }
                 
