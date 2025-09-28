@@ -97,7 +97,21 @@ struct ContentView: View {
                     Text(result)
                 }
             }
+            .padding(.vertical, 16)
             .navigationTitle("Unit Converter")
+            .tint(.pink)
+            .scrollContentBackground(.hidden)
+            .background(
+                .linearGradient(
+                    colors: [
+                      Color.purple.opacity(0.3),
+                      Color.pink.opacity(0.2),
+                      Color.orange.opacity(0.1),
+                  ],
+                  startPoint: .topLeading,
+                  endPoint: .bottomTrailing
+                )
+           )
             .toolbar {
                 if inputIsFocused || outputIsFocused {
                     Button("Done") {
@@ -112,7 +126,9 @@ struct ContentView: View {
                 outputUnit = units[1]
             }
         }
+        
     }
+    
     
     init() {
         formatter = MeasurementFormatter()
