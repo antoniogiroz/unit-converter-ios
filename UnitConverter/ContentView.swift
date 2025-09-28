@@ -11,9 +11,11 @@ struct ContentView: View {
     @State private var inputUnit: Dimension = UnitLength.meters
     @State private var outputUnit: Dimension = UnitLength.kilometers
     @State private var inputValue = 1.0
+    @State private var outputValue = 1.0
     @State private var selectedUnits = 0
     
     @FocusState private var inputIsFocused: Bool
+    @FocusState private var outputIsFocused: Bool
     
     let conversions = ["Distance", "Mass", "Temperature", "Time"]
     
@@ -31,6 +33,11 @@ struct ContentView: View {
         let outputMeasurement = inputMeasurement.converted(to: outputUnit)
         
         return formatter.string(from: outputMeasurement)
+    }
+    
+    func calculateConversion(from: Dimension, to: Dimension, value: Double) -> Double {
+        let inputMeasurement = Measurement(value: value, unit: from)
+        return inputMeasurement.converted(to: to).value
     }
     
     var body: some View {
@@ -51,10 +58,16 @@ struct ContentView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .onChange(of: inputUnit) {
+                        outputValue = calculateConversion(from: inputUnit, to: outputUnit, value: inputValue)
+                    }
                     
                     TextField("Enter a value", value: $inputValue, format: .number)
                         .keyboardType(.decimalPad)
                         .focused($inputIsFocused)
+                        .onChange(of: inputValue) {
+                            outputValue = calculateConversion(from: inputUnit, to: outputUnit, value: inputValue)
+                        }
                 }
                 
                 Section("To unit") {
@@ -64,6 +77,16 @@ struct ContentView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .onChange(of: outputUnit) {
+                        outputValue = calculateConversion(from: inputUnit, to: outputUnit, value: inputValue)
+                    }
+                    
+                    TextField("Enter a value", value: $outputValue, format: .number)
+                        .keyboardType(.decimalPad)
+                        .focused($outputIsFocused)
+                        .onChange(of: outputValue) {
+                            inputValue = calculateConversion(from: outputUnit, to: inputUnit, value: outputValue)
+                        }
                 }
                 
                 Section("Result") {
@@ -72,9 +95,10 @@ struct ContentView: View {
             }
             .navigationTitle("Unit Converter")
             .toolbar {
-                if inputIsFocused {
+                if inputIsFocused || outputIsFocused {
                     Button("Done") {
                         inputIsFocused = false
+                        outputIsFocused = false
                     }
                 }
             }
